@@ -17,5 +17,6 @@ namespace BurgarKollen.Functions2
 
         public DbSet<Restaurant> Restaurants {get; set;}
         public DbSet<UserRating> UserRatings { get; set; }
+        public DbSet<UserFavorit> UserFavorits { get; set; }
     }
 }

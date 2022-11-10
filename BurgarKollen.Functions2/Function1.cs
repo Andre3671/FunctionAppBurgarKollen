@@ -61,17 +61,18 @@ namespace BurgarKollen.Functions2
         {
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             var rating = JsonConvert.DeserializeObject<UserRating>(requestBody);
-
-            //UserRating tempRest = new UserRating()
-            //{
-            //    ResturantId = int.Parse(req.Query["restaurantid"]),
-            //    Rating = int.Parse(req.Query["rating"]),
-
-
-            //};
-
             log.LogInformation("Getting all Restaurants");
             var test = await _dataService.CreateUserRating(rating);
+            return new OkObjectResult(test);
+        }
+
+        [FunctionName("EditUserRating")]
+        public async Task<IActionResult> EditUserRating(
+          [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req, ILogger log)
+        {
+            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            var rating = JsonConvert.DeserializeObject<UserRating>(requestBody);
+            var test = await _dataService.EditUserRating(rating);
             return new OkObjectResult(test);
         }
 
@@ -84,6 +85,49 @@ namespace BurgarKollen.Functions2
 
            
             var test = await _dataService.CheckUserRating(user,int.Parse(restaurant));
+            return new OkObjectResult(test);
+        }
+
+        [FunctionName("CheckUserFavorite")]
+        public async Task<IActionResult> CheckUserFavorite(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req, ILogger log)
+        {
+            var user = req.Query["userid"];
+            var restaurant = req.Query["restaurantid"];
+
+
+            var test = await _dataService.CheckUserFavorite(user, int.Parse(restaurant));
+            return new OkObjectResult(test);
+        }
+
+        [FunctionName("AddUserFavorite")]
+        public async Task<IActionResult> AddUserFavorite(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req, ILogger log)
+        {
+            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            var rating = JsonConvert.DeserializeObject<UserFavorit>(requestBody);
+            var test = await _dataService.AddUserFavorite(rating);
+            return new OkObjectResult(test);
+        }
+
+        [FunctionName("RemoveUserFavorite")]
+        public async Task<IActionResult> RemoveUserFavorite(
+       [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req, ILogger log)
+        {
+            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            var rating = JsonConvert.DeserializeObject<UserFavorit>(requestBody);
+            var test = await _dataService.RemoveUserFavorite(rating);
+            return new OkObjectResult(test);
+        }
+
+        [FunctionName("GetAllUserFavorite")]
+        public async Task<IActionResult> GetAllUserFavorite(
+         [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req, ILogger log)
+        {
+            string userid = req.Query["userid"];
+
+            log.LogInformation("Getting all favorites");
+            var test = await _dataService.GetAllUserFavoritesAsync(userid);
             return new OkObjectResult(test);
         }
 
