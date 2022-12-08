@@ -113,13 +113,13 @@ namespace BurgarKollenFunctions
 
         [Function("AddUserFavorite")]
         public async Task<HttpResponseData> AddUserFavorite(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequestData req, ILogger log)
+        [HttpTrigger(AuthorizationLevel.Anonymous,"get", "post", Route = "AddUserFavorite/{favorit}")] HttpRequestData req,Userfavorit favorit)
         {
-            var favorit = await req.ReadFromJsonAsync<Userfavorit>();
+            // var favorit =  req.ReadAsString();
             var fav = await _dataService.GetUserFavoriteAsync(favorit.UserId);
             if (fav == null)
             {
-              await  _dataService.AddUserFavorite(new Userfavorit { UserId = favorit.UserId, Restaurants = fav.Restaurants });
+                await _dataService.AddUserFavorite(new Userfavorit { UserId = favorit.UserId, Restaurants = fav.Restaurants });
             }
             else
             {
@@ -132,18 +132,14 @@ namespace BurgarKollenFunctions
                 }
                 await _dataService.AddUserFavorite(fav);
             }
-
-            // _logger.LogInformation("Getting all Restaurants");
-            // var test = await _dataService.CreateRestaurantAsync(resturant);
-
             return req.CreateResponse(HttpStatusCode.OK);
         }
 
         [Function("RemoveUserFavorite")]
         public async Task<HttpResponseData> RemoveUserFavorite(
-       [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequestData req, ILogger log)
+       [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "RemoveUserFavorite/{favorit}")] HttpRequestData req, Userfavorit favorit)
         {
-            var favorit = await req.ReadFromJsonAsync<Userfavorit>();
+            //var favorit = await req.ReadFromJsonAsync<Userfavorit>();
             var fav = await _dataService.GetUserFavoriteAsync(favorit.UserId);
             if (fav != null)
             {
@@ -162,16 +158,27 @@ namespace BurgarKollenFunctions
 
         [Function("GetAllUserFavorite")]
         public async Task<HttpResponseData> GetAllUserFavorite(
-         [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequestData req)
+         [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "GetAllUserFavorite/User/{userid}")] HttpRequestData req,string userid)
         {
-            var userid = await req.ReadAsStringAsync();
+            //var userid = await req.ReadAsStringAsync();
             //     string userid = req.Query["userid"];
+            if (!String.IsNullOrEmpty(userid)) {
+                _logger.LogInformation("Getting all favorites");
+                Userfavorit fav = await _dataService.GetUserFavoriteAsync(userid);
+                var resp = req.CreateResponse(HttpStatusCode.OK);
+                await resp.WriteAsJsonAsync(fav);
+                return resp;
 
-            _logger.LogInformation("Getting all favorites");
-            var test = await _dataService.GetUserFavoriteAsync(userid);
-            var resp = req.CreateResponse(HttpStatusCode.OK);
-            await resp.WriteAsJsonAsync(test);
-            return resp;
+            }
+            else
+            {
+                 
+                var resp = req.CreateResponse(HttpStatusCode.OK);
+                await resp.WriteAsJsonAsync(new Userfavorit() { Id = "", Restaurants = new List<Restaurant>(), UserId = "" });
+
+                return resp;
+            }
+           
         }
 
         [Function("GetAllUserRatings")]

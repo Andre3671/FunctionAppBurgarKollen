@@ -131,9 +131,9 @@ namespace BurgarKollenFunctions.Services
             return _context.GetQuerableCollection<UserRating>().Where(x => x.Restaurant.Id == id).ToList();
         }
 
-        public async Task<Userfavorit> GetUserFavoriteAsync(string id)
+        public async Task<Userfavorit?> GetUserFavoriteAsync(string id)
         {
-            return _context.GetQuerableCollection<Userfavorit>().First(x => x.UserId == id);
+            return _context.GetQuerableCollection<Userfavorit>().FirstOrDefault(x => x.UserId == id);
         }
     }
 }
