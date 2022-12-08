@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
-using BurgarKollen.Functions2;
+using BurgarKollenFunctions.Functions2;
 
 namespace FunctionAppBurgarKollen
 {

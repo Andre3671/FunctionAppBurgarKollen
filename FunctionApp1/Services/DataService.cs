@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BurgarKollenFunctions.Lib2;
-using FunctionAppBurgarKollen.Migrations;
+using BurgarKollenFunctions;
 using Microsoft.EntityFrameworkCore;
 
-namespace BurgarKollenFunctions.Functions2.Services
+namespace BurgarKollenFunctions.Services
 {
     public class DataService
     {

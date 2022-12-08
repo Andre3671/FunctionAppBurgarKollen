@@ -1,5 +1,5 @@
 ﻿using FunctionAppBurgarKollen;
-using BurgarKollen.Functions2.Services;
+using BurgarKollenFunctions.Functions2.Services;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BurgarKollen.Functions2;
+using BurgarKollenFunctions.Functions2;
 
 [assembly: FunctionsStartup(typeof(Startup))]
 namespace FunctionAppBurgarKollen

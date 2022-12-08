@@ -1,44 +1,41 @@
-using System;
-using System.IO;
-using System.Threading.Tasks;
-
-using Microsoft.Azure.WebJobs;
-
-
+using System.Net;
+using BurgarKollenFunctions.Services;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using BurgarKollenFunctions.Functions2.Services;
-using BurgarKollenFunctions.Lib2;
-using System.Net;
-using System.Xml.Linq;
 
-namespace BurgarKollenFunctions.Functions2
+namespace BurgarKollenFunctions
 {
     public class Function1
     {
+        private readonly ILogger _logger;
         private readonly DataService _dataService;
-        public Function1(DataService dataService)
+        public Function1(DataService dataService,ILoggerFactory loggerFactory)
         {
+            _logger = loggerFactory.CreateLogger<Function1>();
             _dataService = dataService;
         }
+       
+       
 
-        [FunctionName("GetAllRestaurants")]
+        [Function("GetAllRestaurants")]
         public async Task<HttpResponseData> GetAllRestaurants(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequestData req, ILogger log)
+             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequestData req)
         {
 
-            
-           
 
-            log.LogInformation("Getting all Restaurants");
+
+
+            _logger.LogInformation("Getting all Restaurants");
             var test = await _dataService.GetAllRestaurantsAsync();
-            return req.CreateResponse(HttpStatusCode.OK) ;
+            return req.CreateResponse(HttpStatusCode.OK);
 
         }
 
-        [FunctionName("AddRestaurant")]
+        [Function("AddRestaurant")]
         public async Task<HttpResponseData> AddRestaurant(
-           [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "/{restaurant:alpha}")] HttpRequestData req,Restaurant restaurant, ILogger log)
+           [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequestData req, Restaurant restaurant, ILogger log)
         {
             //Restaurant tempRest = new Restaurant()
             //{
@@ -56,7 +53,7 @@ namespace BurgarKollenFunctions.Functions2
             return req.CreateResponse(HttpStatusCode.OK);
         }
 
-        [FunctionName("AddUserRating")]
+        [Function("AddUserRating")]
         public async Task<HttpResponseData> AddUserRating(
           [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequestData req, ILogger log)
         {
@@ -67,7 +64,7 @@ namespace BurgarKollenFunctions.Functions2
             return req.CreateResponse(HttpStatusCode.OK);
         }
 
-        [FunctionName("EditUserRating")]
+        [Function("EditUserRating")]
         public async Task<HttpResponseData> EditUserRating(
           [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequestData req, ILogger log)
         {
@@ -84,7 +81,7 @@ namespace BurgarKollenFunctions.Functions2
         //    var user = req.Query["userid"];
         //     var restaurant = req.Query["restaurantid"];
 
-           
+
         //    var test = await _dataService.CheckUserRating(user,int.Parse(restaurant));
         //    return req.CreateResponse(HttpStatusCode.OK);
         //}
@@ -101,7 +98,7 @@ namespace BurgarKollenFunctions.Functions2
         //    return req.CreateResponse(HttpStatusCode.OK);
         //}
 
-        [FunctionName("AddUserFavorite")]
+        [Function("AddUserFavorite")]
         public async Task<HttpResponseData> AddUserFavorite(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequestData req, ILogger log)
         {
@@ -111,7 +108,7 @@ namespace BurgarKollenFunctions.Functions2
             return req.CreateResponse(HttpStatusCode.OK);
         }
 
-        [FunctionName("RemoveUserFavorite")]
+        [Function("RemoveUserFavorite")]
         public async Task<HttpResponseData> RemoveUserFavorite(
        [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequestData req, ILogger log)
         {

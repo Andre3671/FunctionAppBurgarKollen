@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BurgarKollenFunctions.Lib2
+namespace BurgarKollenFunctions
 {
     public class UserRating
     {

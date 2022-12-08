@@ -1,4 +1,4 @@
-﻿namespace BurgarKollen.Lib2
+﻿namespace BurgarKollenFunctions.Lib2
 {
     public class Restaurant
     {
