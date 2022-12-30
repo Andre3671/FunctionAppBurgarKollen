@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Http.Json;
 using BurgarKollen.Lib2;
 using BurgarKollen_Lib2;
 using BurgarKollenFunctions.Services;
@@ -7,6 +8,7 @@ using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Bson.IO;
+using MongoDB.Bson.Serialization;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace BurgarKollenFunctions
@@ -37,7 +39,7 @@ namespace BurgarKollenFunctions
 
         [Function("GetAllRestaurants")]
         public async Task<HttpResponseData> GetAllRestaurants(
-             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequestData req)
+             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequestData req)
         {
             _logger.LogInformation("Getting all Restaurants");
             var test = await _dataService.GetAllRestaurantsAsync();
@@ -112,27 +114,50 @@ namespace BurgarKollenFunctions
         }
 
         [Function("AddUserFavorite")]
-        public async Task<HttpResponseData> AddUserFavorite(
-        [HttpTrigger(AuthorizationLevel.Anonymous,"get", "post", Route = "AddUserFavorite/{favorit}")] HttpRequestData req,Userfavorit favorit)
+        public async Task<Userfavorit> AddUserFavorite(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequestData req)
         {
-            // var favorit =  req.ReadAsString();
-            var fav = await _dataService.GetUserFavoriteAsync(favorit.UserId);
-            if (fav == null)
+            using var reader = new StreamReader(req.Body);
+            var bodyContent = await reader.ReadToEndAsync();
+            if(bodyContent != null)
             {
-                await _dataService.AddUserFavorite(new Userfavorit { UserId = favorit.UserId, Restaurants = fav.Restaurants });
-            }
-            else
-            {
-                foreach (var favRest in favorit.Restaurants)
+                Userfavorit favorit = Newtonsoft.Json.JsonConvert.DeserializeObject<Userfavorit>(bodyContent);
+                var fav = await _dataService.GetUserFavoriteAsync(favorit.UserId);
+
+                if (fav == null)
                 {
-                    if (!fav.Restaurants.Any(x => x.Id == favRest.Id))
+                    List<Restaurant> list = new List<Restaurant>();
+                    if (favorit.Restaurants is not null)
                     {
-                        fav.Restaurants.Add(favRest);
+                        list.AddRange(favorit.Restaurants);
+
                     }
+                    await _dataService.AddUserFavorite(new Userfavorit { UserId = favorit.UserId, Restaurants = list });
                 }
-                await _dataService.AddUserFavorite(fav);
+                else
+                {
+                    foreach (var favRest in favorit.Restaurants)
+                    {
+                        if (!fav.Restaurants.Any(x => x.Id == favRest.Id))
+                        {
+                            fav.Restaurants.Add(favRest);
+                        }
+                    }
+                    await _dataService.AddUserFavorite(fav);
+                }
+                HttpResponseData req2;
+
+               
+                return fav;
             }
-            return req.CreateResponse(HttpStatusCode.OK);
+
+
+
+
+
+
+           
+            return null;
         }
 
         [Function("RemoveUserFavorite")]
